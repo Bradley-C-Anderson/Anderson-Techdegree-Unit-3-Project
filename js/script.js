@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const shirtColor = document.getElementById('color');
     shirtColor.disabled = true;
-    console.log(shirtColor.selectedIndex);
+    //console.log(shirtColor.selectedIndex);
 
     const shirtDesigns = document.getElementById('design');
     shirtDesigns.addEventListener('change', (e) => {
@@ -49,8 +49,22 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
-
-
+    let totalCost = 0;
+    const activities = document.getElementById('activities-box');
+    activities.addEventListener('change', (e) => {
+        const totalOutput = document.getElementById('activities-cost');
+        //console.log(totalOutput.innerHTML);
+        //This gets the cost of each event signed up for
+        const cost = e.target.getAttribute('data-cost');
+        if(e.target.checked){
+            totalCost += parseInt(cost);
+            totalOutput.innerHTML = `Total: $${totalCost}`;
+        } else if (e.target.checked === false){
+            totalCost -= parseInt(cost);
+            totalOutput.innerHTML = `Total: $${totalCost}`;
+        }
+        console.log(`Total: $${totalCost}`);
+    });
 
 
 });//end of DOMContentLoaded listener
