@@ -89,9 +89,64 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    console.log(payment);
-    //paymentChoice[0].style.display = 'none';
-    //console.log(paymentChoice.getElementsByTagName('option'));
 
+    function showOrHideTip(show, element) {
+        // show element when show is true, hide when false
+        if (show) {
+          element.style.display = "inherit";
+        } else {
+          element.style.display = "none";
+        }
+    }
+
+    function createListener(validator) {
+        return (e) => {
+            const text = e.target.value;
+            const valid = validator(text);
+            const showTip = text !== "" && !valid;
+            console.log(text);
+            const tooltip = e.target.nextElementSibling;
+            showOrHideTip(showTip, tooltip);
+        };
+    }
+
+    function isValidName(name) {
+        return (name.trim() !== '');
+    }
+
+    // Must be a valid email address
+    function isValidEmail(email) {
+        return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/i.test(email);
+    }
+
+    function isValidCC(ccNum){
+        return /^[0-9]{13,16}$/.test(ccNum);
+    }
+
+    function isValidZip(zip){
+        return /^[0-9]{5}$/.test(zip);
+    }
+
+    function isValidCVV(cvv){
+        return /^[0-9]{3}$/.test(cvv);
+    }
+
+    nameInput.addEventListener("blur", createListener(isValidName));
+
+    const emailInput = document.getElementById('email');
+
+    emailInput.addEventListener("blur", createListener(isValidEmail));
+
+    const ccNumInput = document.getElementById('cc-num');
+
+    ccNumInput.addEventListener("blur", createListener(isValidCC));
+
+    const zip = document.getElementById('zip');
+
+    zip.addEventListener("blur", createListener(isValidZip));
+
+    const cvv = document.getElementById('cvv');
+
+    cvv.addEventListener("blur", createListener(isValidCVV));
 
 });//end of DOMContentLoaded listener
