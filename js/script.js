@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     let totalCost = 0;
-    const activities = document.getElementById('activities-box');
+    const activities = document.getElementById('activities');
     activities.addEventListener('change', (e) => {
         const totalOutput = document.getElementById('activities-cost');
         //console.log(totalOutput.innerHTML);
@@ -63,8 +63,35 @@ document.addEventListener('DOMContentLoaded', () => {
             totalCost -= parseInt(cost);
             totalOutput.innerHTML = `Total: $${totalCost}`;
         }
-        console.log(`Total: $${totalCost}`);
     });
+
+    const payment = document.getElementById('payment');
+    const creditCardInfo = document.getElementById('credit-card');
+    const payPal = document.getElementById('paypal');
+    const bitcoin = document.getElementById('bitcoin');
+
+    payPal.style.display = 'none';
+    bitcoin.style.display = 'none';
+
+    payment.addEventListener('change', (e) => {
+        if(payment.value === 'paypal' ){
+            creditCardInfo.style.display = 'none';
+            payPal.style.display = 'block';
+            bitcoin.style.display = 'none';
+        } else if (payment.value === 'credit-card'){
+            creditCardInfo.style.display = 'block';
+            payPal.style.display = 'none';
+            bitcoin.style.display = 'none';
+        } else if (payment.value === 'bitcoin'){
+            creditCardInfo.style.display = 'none';
+            payPal.style.display = 'none';
+            bitcoin.style.display = 'block';
+        }
+    });
+
+    console.log(payment);
+    //paymentChoice[0].style.display = 'none';
+    //console.log(paymentChoice.getElementsByTagName('option'));
 
 
 });//end of DOMContentLoaded listener
