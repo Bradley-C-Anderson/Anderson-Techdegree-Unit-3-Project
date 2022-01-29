@@ -12,7 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             otherJob.style.display = 'none';
         }
-    })
+    });
+
 
     const shirtColor = document.getElementById('color');
     shirtColor.disabled = true;
@@ -57,6 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
         //This gets the cost of each event signed up for
         const cost = e.target.getAttribute('data-cost');
         if(e.target.checked){
+            checkboxes[0].parentElement.parentElement.style.border = 'initial';
             totalCost += parseInt(cost);
             totalOutput.innerHTML = `Total: $${totalCost}`;
         } else if (e.target.checked === false){
@@ -94,8 +96,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // show element when show is true, hide when false
         if (show) {
           element.style.display = "inherit";
+          element.previousElementSibling.style.border = 'solid';
+          element.previousElementSibling.style.borderColor = 'red';
         } else {
           element.style.display = "none";
+          element.previousElementSibling.style.border = 'initial';
+          element.previousElementSibling.style.borderColor = 'black';
         }
     }
 
@@ -103,8 +109,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return (e) => {
             const text = e.target.value;
             const valid = validator(text);
-            const showTip = text !== "" && !valid;
-            console.log(text);
+            const showTip = text === "" || !valid;
+            //console.log(text);
             const tooltip = e.target.nextElementSibling;
             showOrHideTip(showTip, tooltip);
         };
@@ -114,8 +120,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return (name.trim() !== '');
     }
 
+    function isValidJob(job){
+        return( job.trim() !== '');
+    };
+
     // Must be a valid email address
     function isValidEmail(email) {
+        //found on https://www.w3resource.com/javascript/form/email-validation.php
         return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/i.test(email);
     }
 
@@ -132,7 +143,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     nameInput.addEventListener("blur", createListener(isValidName));
+    
 
+    otherJob.addEventListener("blur", createListener(isValidJob));
+    
     const emailInput = document.getElementById('email');
 
     emailInput.addEventListener("blur", createListener(isValidEmail));
@@ -148,5 +162,58 @@ document.addEventListener('DOMContentLoaded', () => {
     const cvv = document.getElementById('cvv');
 
     cvv.addEventListener("blur", createListener(isValidCVV));
+
+    const form = document.getElementsByTagName('form');
+    //console.log(form);
+
+    const hint = document.getElementsByClassName('hint');
+
+    const checkboxes = activities.getElementsByTagName('input');
+
+    form[0].addEventListener('submit', (e) => {
+
+        if(!isValidName(nameInput.value)){
+            e.preventDefault();
+            console.log('Validate Name');
+            showOrHideTip(true, nameInput.nextElementSibling);
+        }
+        if(!isValidEmail(emailInput.value)){
+            e.preventDefault();
+            console.log('Validate email');
+            showOrHideTip(true, emailInput.nextElementSibling);
+        }
+        let isChecked = false;
+        for(let i = 0; i < checkboxes.length; i++){
+            if(checkboxes[i].checked){
+                isChecked = true;
+            }
+        }
+        if(!isChecked){
+            e.preventDefault();
+            console.log('no Checks');
+            activities.lastElementChild.style.display = 'block';
+            checkboxes[0].parentElement.parentElement.style.border = 'solid';
+            checkboxes[0].parentElement.parentElement.style.borderColor = 'red';
+        }else{
+            activities.lastElementChild.style.display = 'none';
+            checkboxes[0].parentElement.parentElement.style.border = 'none';
+        }
+
+        if(payment.value === 'credit-card'){
+            if(!isValidCC(ccNumInput.value)){
+                showOrHideTip(true, ccNumInput.nextElementSibling);
+            }
+            if(!isValidZip(zip.value)){
+                showOrHideTip(true, zip.nextElementSibling);
+            }
+            if(!isValidCVV(cvv)){
+                showOrHideTip(true, cvv.nextElementSibling);
+            }
+        }
+      
+
+        
+        
+    });
 
 });//end of DOMContentLoaded listener
