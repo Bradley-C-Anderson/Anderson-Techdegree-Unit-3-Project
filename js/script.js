@@ -61,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
             checkboxes[0].parentElement.parentElement.style.border = 'initial';
             totalCost += parseInt(cost);
             totalOutput.innerHTML = `Total: $${totalCost}`;
+            activities.lastElementChild.style.display = 'none';
         } else if (e.target.checked === false){
             totalCost -= parseInt(cost);
             totalOutput.innerHTML = `Total: $${totalCost}`;
@@ -97,11 +98,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (show) {
           element.style.display = "inherit";
           element.previousElementSibling.style.border = 'solid';
-          element.previousElementSibling.style.borderColor = 'red';
+          //element.previousElementSibling.style.borderColor = 'red';
+          element.parentElement.classList.add('not-valid');
+          element.parentElement.classList.remove('valid');
         } else {
           element.style.display = "none";
           element.previousElementSibling.style.border = 'initial';
-          element.previousElementSibling.style.borderColor = 'black';
+          //element.previousElementSibling.style.borderColor = 'black';
+          element.parentElement.classList.remove('not-valid');
+          element.parentElement.classList.add('valid');
         }
     }
 
@@ -192,11 +197,15 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             console.log('no Checks');
             activities.lastElementChild.style.display = 'block';
-            checkboxes[0].parentElement.parentElement.style.border = 'solid';
-            checkboxes[0].parentElement.parentElement.style.borderColor = 'red';
+            //checkboxes[0].parentElement.parentElement.style.border = 'solid';
+            //checkboxes[0].parentElement.parentElement.style.borderColor = 'red';
+            checkboxes[0].parentElement.parentElement.parentElement.classList.add('not-valid')
+            checkboxes[0].parentElement.parentElement.parentElement.classList.remove('valid')
         }else{
             activities.lastElementChild.style.display = 'none';
-            checkboxes[0].parentElement.parentElement.style.border = 'none';
+            //checkboxes[0].parentElement.parentElement.style.border = 'initial';
+            checkboxes[0].parentElement.parentElement.parentElement.classList.add('valid')
+            checkboxes[0].parentElement.parentElement.parentElement.classList.remove('not-valid')
         }
 
         if(payment.value === 'credit-card'){
@@ -206,7 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if(!isValidZip(zip.value)){
                 showOrHideTip(true, zip.nextElementSibling);
             }
-            if(!isValidCVV(cvv)){
+            if(!isValidCVV(cvv.value)){
                 showOrHideTip(true, cvv.nextElementSibling);
             }
         }
