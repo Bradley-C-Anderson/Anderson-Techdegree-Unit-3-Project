@@ -1,32 +1,36 @@
 document.addEventListener('DOMContentLoaded', () => {
+    //name element
     const nameInput = document.getElementById('name');
+    //bring focus to the name element on page load
     nameInput.focus();
     
+    //other job element, does not show on page load
     const otherJob = document.getElementById('other-job-role');
     otherJob.style.display = 'none';
 
+    //job title element, if user chooses other will show other job element
     const jobTitle = document.getElementById('title');
     jobTitle.addEventListener('change', (e) => {
         if(jobTitle.value === 'other'){
-            otherJob.style.display = 'block';
+            otherJob.style.display = 'initial';
         } else {
             otherJob.style.display = 'none';
         }
     });
 
-
+    //shirt color object, disabled on page load
     const shirtColor = document.getElementById('color');
     shirtColor.disabled = true;
-    //console.log(shirtColor.selectedIndex);
 
+    //shirt design opject and listener. On change, will show the correct colors 
     const shirtDesigns = document.getElementById('design');
     shirtDesigns.addEventListener('change', (e) => {
         //get all the options
         const shirtOptions = document.getElementById('color').getElementsByTagName('option');
         shirtColor.disabled = false;
+        //Show the correct color
         if (shirtDesigns.value === 'js puns'){
             for (let i = 0; i < shirtOptions.length; i++){
-                //console.log(shirtOptions[i].getAttribute('data-theme'));
                 if(shirtOptions[i].getAttribute('data-theme') === 'js puns'){
                     shirtOptions[i].style.display = 'block'
                     shirtColor.selectedIndex = 0;
@@ -50,12 +54,27 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
-    let totalCost = 0;
-    const activities = document.getElementById('activities');
+    //initialize var numChecks that keeps track of how many boxes are checked for activities.
     let numChecks = 0;
+    //function that shows if there is at lease one checkbox checked. Will show 
+    function areAnyChecked(){
+        if(numChecks > 0){
+            activitiesBox.previousElementSibling.classList.add('valid');
+            activitiesBox.previousElementSibling.classList.remove('not-valid');
+            activitiesBox.nextElementSibling.nextElementSibling.style.display = 'none';
+        } else {
+            activitiesBox.previousElementSibling.classList.add('not-valid');
+            activitiesBox.previousElementSibling.classList.remove('valid');
+            activitiesBox.nextElementSibling.nextElementSibling.style.display = 'block';
+        }
+    }
+
+    //initialize total cost  
+    let totalCost = 0;
+    //listener for activities
+    const activities = document.getElementById('activities');
     activities.addEventListener('change', (e) => {
         const totalOutput = document.getElementById('activities-cost');
-        //console.log(totalOutput.innerHTML);
         //This gets the cost of each event signed up for
         const cost = e.target.getAttribute('data-cost');
         if(e.target.checked){
@@ -69,11 +88,11 @@ document.addEventListener('DOMContentLoaded', () => {
             totalOutput.innerHTML = `Total: $${totalCost}`;
             numChecks -= 1; 
         }
-        areAllChecked();
+        areAnyChecked();
     });
 
     
-
+    //Create elements for payment, CC Info, PayPay, and BitCoin
     const payment = document.getElementById('payment');
     const creditCardInfo = document.getElementById('credit-card');
     const payPal = document.getElementById('paypal');
@@ -81,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     payPal.style.display = 'none';
     bitcoin.style.display = 'none';
-
+    //Payment listener to Hide CC info if PayPay or Bitcoin is selected and show CC into if it is selected.
     payment.addEventListener('change', (e) => {
         if(payment.value === 'paypal' ){
             creditCardInfo.style.display = 'none';
@@ -98,169 +117,114 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-
+    //Function to Show Tip if invalid value from user or hide tip if the value is valid.
     function showOrHideTip(show, element) {
         // show element when show is true, hide when false
         if (show) {
           element.style.display = "inherit";
-          element.previousElementSibling.style.border = 'solid';
-          //element.previousElementSibling.style.borderColor = 'red';
           element.parentElement.classList.add('not-valid');
           element.parentElement.classList.remove('valid');
         } else {
           element.style.display = "none";
           element.previousElementSibling.style.border = 'initial';
-          //element.previousElementSibling.style.borderColor = 'black';
           element.parentElement.classList.remove('not-valid');
           element.parentElement.classList.add('valid');
         }
     }
-
+    //listener to get text from input and show the correct tip if value is incorrect.
     function createListener(validator) {
         return (e) => {
             const text = e.target.value;
             const valid = validator(text);
             const showTip = text === "" || !valid;
-            //console.log(text);
             const tooltip = e.target.nextElementSibling;
             showOrHideTip(showTip, tooltip);
         };
     }
-
+    //validate if name has at least one character
     function isValidName(name) {
         return (name.trim() !== '');
     }
 
-    function isValidJob(job){
-        return( job.trim() !== '');
-    };
-
-    // Must be a valid email address
+    //Validate email address
     function isValidEmail(email) {
         //found on https://www.w3resource.com/javascript/form/email-validation.php
         return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/i.test(email);
     }
-
+    //Validate that credit card number is 13-16 digits.
     function isValidCC(ccNum){
         return /^[0-9]{13,16}$/.test(ccNum);
     }
-
+    //Validate the zip code if 5 digits
     function isValidZip(zip){
         return /^[0-9]{5}$/.test(zip);
     }
-
+    //Validate the CVV is 3 digits.
     function isValidCVV(cvv){
         return /^[0-9]{3}$/.test(cvv);
     }
-
+    //Event listener for name input to validate value.
     nameInput.addEventListener("input", createListener(isValidName));
-    
-
-    otherJob.addEventListener("input", createListener(isValidJob));
-    
+    //Create emailInput element and validate value.
     const emailInput = document.getElementById('email');
-
     emailInput.addEventListener("input", createListener(isValidEmail));
-
+    //Create ccNumInput element and validate value.
     const ccNumInput = document.getElementById('cc-num');
-
     ccNumInput.addEventListener("input", createListener(isValidCC));
-
+    //Create zip element and validate value.
     const zip = document.getElementById('zip');
-
     zip.addEventListener("input", createListener(isValidZip));
-
+    //Create CVV element and validate value.
     const cvv = document.getElementById('cvv');
-
     cvv.addEventListener("input", createListener(isValidCVV));
-
+    //Create form element
     const form = document.getElementsByTagName('form');
-    //console.log(form);
-
-    const hint = document.getElementsByClassName('hint');
-
+    //Get all checkbox elements
     const checkboxes = activities.getElementsByTagName('input');
+    //Create 
     const activitiesBox = document.getElementById('activities-box');
     
-    function areAllChecked(){
-        if(numChecks > 0){
-            // activitiesBox.classList.add('valid');
-            // activitiesBox.classList.remove('not-valid');
-            // activitiesBox.parentElement.classList.add('valid');
-            // activitiesBox.parentElement.classList.remove('not-valid');
-            activitiesBox.previousElementSibling.classList.add('valid');
-            activitiesBox.previousElementSibling.classList.remove('not-valid');
-            // checkboxes[0].parentElement.parentElement.parentElement.classList.add('valid')
-            // checkboxes[0].parentElement.parentElement.parentElement.classList.remove('not-valid')
-        } else {
-            // activitiesBox.classList.add('not-valid');
-            // activitiesBox.classList.remove('valid');
-            // activitiesBox.parentElement.classList.add('not-valid');
-            // activitiesBox.parentElement.classList.remove('valid');
-            activitiesBox.previousElementSibling.classList.add('not-valid');
-            activitiesBox.previousElementSibling.classList.remove('valid');
-            // checkboxes[0].parentElement.parentElement.parentElement.classList.add('not-valid')
-            // checkboxes[0].parentElement.parentElement.parentElement.classList.remove('valid')
-        }
-
-    }
-
+    //Listener to submit entire form
     form[0].addEventListener('submit', (e) => {
-
+        //On submission if nameInput is not valid, will show tip and prevent submission.
         if(!isValidName(nameInput.value)){
             e.preventDefault();
-            console.log('Validate Name');
             showOrHideTip(true, nameInput.nextElementSibling);
         }
+        //On submission if email is not valid, will show tip and prevent submission.
         if(!isValidEmail(emailInput.value)){
             e.preventDefault();
-            console.log('Validate email');
             showOrHideTip(true, emailInput.nextElementSibling);
         }
-        areAllChecked();
+        //On submission if no activities are checked, will show tip and prevent submission.
+        areAnyChecked();
         
-
+        ////On submission if credit card is selected and if CC Number, zip, or CVV is not valid, will show tip and prevent submission.
         if(payment.value === 'credit-card'){
             if(!isValidCC(ccNumInput.value)){
+                e.preventDefault();
                 showOrHideTip(true, ccNumInput.nextElementSibling);
             }
             if(!isValidZip(zip.value)){
+                e.preventDefault();
                 showOrHideTip(true, zip.nextElementSibling);
             }
             if(!isValidCVV(cvv.value)){
+                e.preventDefault();
                 showOrHideTip(true, cvv.nextElementSibling);
             }
         }
-
-        
-
     });
 
     //add focus class to checkboxes label on focus (tab into) and remove when focus out (tab away)
-for(let i = 0; i < checkboxes.length; i++){
-    checkboxes[i].addEventListener('focus', (e) => {
+    for(let i = 0; i < checkboxes.length; i++){
+        checkboxes[i].addEventListener('focus', (e) => {
         checkboxes[i].parentElement.classList.add('focus');
     });
     checkboxes[i].addEventListener('focusout', (e) => {
         checkboxes[i].parentElement.classList.remove('focus');
     });
 }
-    //     if(element === document.activeElement){
-    //         element.classList.add('focus')
-    //     }
-    
-    
-    // let previousCheckbox = checkboxes[0];
-    // let currentCheckbox = checkboxes[0];
-    // //currentCheckbox.parentElement.classList.add('focus');
-    // for(let i = 0; i < checkboxes.length; i++){
-    //     if(checkboxes[i] === document.activeElement){
-    //         console.log('focus');
-    //         previousCheckbox = currentCheckbox;
-    //         currentCheckbox = checkboxes[i];
-    //         currentCheckbox.parentElement.classList.add('focus');
-    //         previousCheckbox.parentElement.classList.remove('focus');
-    //     }
-    // }
+
     
 });//end of DOMContentLoaded listener
