@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const nameInput = document.getElementById('name');
     nameInput.focus();
-
+    
     const otherJob = document.getElementById('other-job-role');
     otherJob.style.display = 'none';
 
@@ -52,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     let totalCost = 0;
     const activities = document.getElementById('activities');
+    let numChecks = 0;
     activities.addEventListener('change', (e) => {
         const totalOutput = document.getElementById('activities-cost');
         //console.log(totalOutput.innerHTML);
@@ -62,11 +63,16 @@ document.addEventListener('DOMContentLoaded', () => {
             totalCost += parseInt(cost);
             totalOutput.innerHTML = `Total: $${totalCost}`;
             activities.lastElementChild.style.display = 'none';
+            numChecks += 1;
         } else if (e.target.checked === false){
             totalCost -= parseInt(cost);
             totalOutput.innerHTML = `Total: $${totalCost}`;
+            numChecks -= 1; 
         }
+        areAllChecked();
     });
+
+    
 
     const payment = document.getElementById('payment');
     const creditCardInfo = document.getElementById('credit-card');
@@ -147,26 +153,26 @@ document.addEventListener('DOMContentLoaded', () => {
         return /^[0-9]{3}$/.test(cvv);
     }
 
-    nameInput.addEventListener("blur", createListener(isValidName));
+    nameInput.addEventListener("input", createListener(isValidName));
     
 
-    otherJob.addEventListener("blur", createListener(isValidJob));
+    otherJob.addEventListener("input", createListener(isValidJob));
     
     const emailInput = document.getElementById('email');
 
-    emailInput.addEventListener("blur", createListener(isValidEmail));
+    emailInput.addEventListener("input", createListener(isValidEmail));
 
     const ccNumInput = document.getElementById('cc-num');
 
-    ccNumInput.addEventListener("blur", createListener(isValidCC));
+    ccNumInput.addEventListener("input", createListener(isValidCC));
 
     const zip = document.getElementById('zip');
 
-    zip.addEventListener("blur", createListener(isValidZip));
+    zip.addEventListener("input", createListener(isValidZip));
 
     const cvv = document.getElementById('cvv');
 
-    cvv.addEventListener("blur", createListener(isValidCVV));
+    cvv.addEventListener("input", createListener(isValidCVV));
 
     const form = document.getElementsByTagName('form');
     //console.log(form);
@@ -174,6 +180,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const hint = document.getElementsByClassName('hint');
 
     const checkboxes = activities.getElementsByTagName('input');
+    const activitiesBox = document.getElementById('activities-box');
+    
+    function areAllChecked(){
+        if(numChecks > 0){
+            // activitiesBox.classList.add('valid');
+            // activitiesBox.classList.remove('not-valid');
+            // activitiesBox.parentElement.classList.add('valid');
+            // activitiesBox.parentElement.classList.remove('not-valid');
+            activitiesBox.previousElementSibling.classList.add('valid');
+            activitiesBox.previousElementSibling.classList.remove('not-valid');
+            // checkboxes[0].parentElement.parentElement.parentElement.classList.add('valid')
+            // checkboxes[0].parentElement.parentElement.parentElement.classList.remove('not-valid')
+        } else {
+            // activitiesBox.classList.add('not-valid');
+            // activitiesBox.classList.remove('valid');
+            // activitiesBox.parentElement.classList.add('not-valid');
+            // activitiesBox.parentElement.classList.remove('valid');
+            activitiesBox.previousElementSibling.classList.add('not-valid');
+            activitiesBox.previousElementSibling.classList.remove('valid');
+            // checkboxes[0].parentElement.parentElement.parentElement.classList.add('not-valid')
+            // checkboxes[0].parentElement.parentElement.parentElement.classList.remove('valid')
+        }
+
+    }
 
     form[0].addEventListener('submit', (e) => {
 
@@ -187,26 +217,8 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Validate email');
             showOrHideTip(true, emailInput.nextElementSibling);
         }
-        let isChecked = false;
-        for(let i = 0; i < checkboxes.length; i++){
-            if(checkboxes[i].checked){
-                isChecked = true;
-            }
-        }
-        if(!isChecked){
-            e.preventDefault();
-            console.log('no Checks');
-            activities.lastElementChild.style.display = 'block';
-            //checkboxes[0].parentElement.parentElement.style.border = 'solid';
-            //checkboxes[0].parentElement.parentElement.style.borderColor = 'red';
-            checkboxes[0].parentElement.parentElement.parentElement.classList.add('not-valid')
-            checkboxes[0].parentElement.parentElement.parentElement.classList.remove('valid')
-        }else{
-            activities.lastElementChild.style.display = 'none';
-            //checkboxes[0].parentElement.parentElement.style.border = 'initial';
-            checkboxes[0].parentElement.parentElement.parentElement.classList.add('valid')
-            checkboxes[0].parentElement.parentElement.parentElement.classList.remove('not-valid')
-        }
+        areAllChecked();
+        
 
         if(payment.value === 'credit-card'){
             if(!isValidCC(ccNumInput.value)){
@@ -219,10 +231,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 showOrHideTip(true, cvv.nextElementSibling);
             }
         }
-      
 
         
-        
+
     });
 
+    //add focus class to checkboxes label on focus (tab into) and remove when focus out (tab away)
+for(let i = 0; i < checkboxes.length; i++){
+    checkboxes[i].addEventListener('focus', (e) => {
+        checkboxes[i].parentElement.classList.add('focus');
+    });
+    checkboxes[i].addEventListener('focusout', (e) => {
+        checkboxes[i].parentElement.classList.remove('focus');
+    });
+}
+    //     if(element === document.activeElement){
+    //         element.classList.add('focus')
+    //     }
+    
+    
+    // let previousCheckbox = checkboxes[0];
+    // let currentCheckbox = checkboxes[0];
+    // //currentCheckbox.parentElement.classList.add('focus');
+    // for(let i = 0; i < checkboxes.length; i++){
+    //     if(checkboxes[i] === document.activeElement){
+    //         console.log('focus');
+    //         previousCheckbox = currentCheckbox;
+    //         currentCheckbox = checkboxes[i];
+    //         currentCheckbox.parentElement.classList.add('focus');
+    //         previousCheckbox.parentElement.classList.remove('focus');
+    //     }
+    // }
+    
 });//end of DOMContentLoaded listener
